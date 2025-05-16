@@ -9,34 +9,34 @@ Design a 5-stage pipeline RISC processor (with hazard detection and data forward
 0012 AND   reg8, reg7, reg6  
 0016 OR    reg9, reg8, reg3  
 
-Initialize the register file with the following data:
+Initialize the register file with the following data:  
 reg1 = 90966  
-reg2 = 5
-reg4 = FE331
-reg5 = 45432
-reg7 = 23211
+reg2 = 5  
+reg4 = FE331  
+reg5 = 45432  
+reg7 = 23211  
 
-Opcode for each instruction:
-Instruction 1: 0000
-Instruction 2: 0001
-Instruction 3: 0011
-Instruction 4: 0111
-Instruction 5: 1111
+Opcode for each instruction:  
+Instruction 1: 0000  
+Instruction 2: 0001  
+Instruction 3: 0011  
+Instruction 4: 0111  
+Instruction 5: 1111  
 
-The processor has the following control signals:
-ALUSrc – Select the second input of ALU
-ALUOp (2 bits) – Control ALU operation
-MR – Read data from memory
-MW – Write data into memory
-MReg – Move data from memory to register
-EnIM – Read instruction memory contents
-EnRW – Write data into the register file
-FA – Forward A mux control (used in data forwarding circuitry)
-FB – Forward B mux control (used in data forwarding circuitry)
-IFIDWrite – Disable IF/ID change (used in hazard detection circuit)
-PCWrite – Disable PC change (used in hazard detection circuit)
-ST – Control signal of mux which changes all control signals to zero (used in hazard detection circuit)
-
+The processor has the following control signals:  
+ALUSrc – Select the second input of ALU  
+ALUOp (2 bits) – Control ALU operation  
+MR – Read data from memory  
+MW – Write data into memory  
+MReg – Move data from memory to register  
+EnIM – Read instruction memory contents  
+EnRW – Write data into the register file  
+FA – Forward A mux control (used in data forwarding circuitry)  
+FB – Forward B mux control (used in data forwarding circuitry)  
+IFIDWrite – Disable IF/ID change (used in hazard detection circuit)  
+PCWrite – Disable PC change (used in hazard detection circuit)  
+ST – Control signal of mux which changes all control signals to zero (used in hazard detection circuit)  
+ 
 Other specifications:
 Initialize PC with all zeros. Instruction memory size = 32 bytes. Processor has 16 registers, named reg0 to reg15, each 32 bits wide. A read from instruction memory outputs 4 consecutive bytes starting from the given byte address at the positive edge of the clock, if EnIM is high. The register file has:
 Two 32-bit read ports: RD1 and RD2
