@@ -2,10 +2,9 @@
 Problem Statement
 
 Design a 5-stage pipeline RISC processor (with hazard detection and data forwarding unit as necessary) that can execute the following instructions:
+
 0000 SW    reg1, 7(reg2)  
-
 0004 NOR   reg3, reg4, reg5  
-
 0008 ADDI  reg6, reg3, 1078  
 0012 AND   reg8, reg7, reg6  
 0016 OR    reg9, reg8, reg3  
