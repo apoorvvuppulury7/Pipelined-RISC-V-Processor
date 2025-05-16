@@ -31,22 +31,22 @@ MW – Write data into memory
 MReg – Move data from memory to register  
 EnIM – Read instruction memory contents  
 EnRW – Write data into the register file  
-FA – Forward A mux control (used in data forwarding circuitry)  
-FB – Forward B mux control (used in data forwarding circuitry)  
-IFIDWrite – Disable IF/ID change (used in hazard detection circuit)  
-PCWrite – Disable PC change (used in hazard detection circuit)  
-ST – Control signal of mux which changes all control signals to zero (used in hazard detection circuit)  
+FA – Forward A mux control  
+FB – Forward B mux control  
+IFIDWrite – Disable IF/ID change  
+PCWrite – Disable PC change  
+ST – Control signal of mux which changes all control signals to zero  
  
 Other specifications:
-Initialize PC with all zeros. Instruction memory size = 32 bytes. Processor has 16 registers, named reg0 to reg15, each 32 bits wide. A read from instruction memory outputs 4 consecutive bytes starting from the given byte address at the positive edge of the clock, if EnIM is high. The register file has:
-Two 32-bit read ports: RD1 and RD2
-One 32-bit write port: WD
+Initialize PC with all zeros. Instruction memory size = 32 bytes. Processor has 16 registers, named reg0 to reg15, each 32 bits wide. A read from instruction memory outputs 4 consecutive bytes starting from the given byte address at the positive edge of the clock, if EnIM is high.   The register file has:
+Two 32-bit read ports: RD1 and RD2  
+One 32-bit write port: WD  
 
 At rising edge of the clock: RD1 and RD2 output data from registers addressed by RN1 and RN2. At falling edge of the clock: data is written via WD to the register at WN, if EnRW is true. Data memory size should be designed as per requirement. All data are in hexadecimal unless stated otherwise.
-
-Design Requirements:
+  
+Design Requirements:  
 Create behavioral Verilog models for each architectural block. Build a top-level structural model of the processor by instantiating and interconnecting the blocks. Specify the size and format of all pipeline registers, including fields for:
-Decoded control signals
-Data
+  Decoded control signals  
+Data  
 Show all input, output, and control signal waveforms in the report.
 
