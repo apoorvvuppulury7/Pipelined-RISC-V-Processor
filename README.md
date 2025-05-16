@@ -11,6 +11,7 @@ Design a 5-stage pipeline RISC processor (with hazard detection and data forward
 
 Initialize the register file with the following data:
 reg1 = 90966
+
 reg2 = 5
 reg4 = FE331
 reg5 = 45432
