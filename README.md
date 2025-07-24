@@ -1,4 +1,4 @@
-# Computer-Architecture-Project
+# 5 Stage Pipelined RISC Processor
 Problem Statement
 
 Design a 5-stage pipeline RISC processor (with hazard detection and data forwarding unit as necessary) that can execute the following instructions:
