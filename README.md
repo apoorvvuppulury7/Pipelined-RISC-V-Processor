@@ -1,52 +1,29 @@
-# 5 Stage Pipelined RISC Processor
-Problem Statement
+# RISCV-Processors
 
-Design a 5-stage pipeline RISC processor (with hazard detection and data forwarding unit as necessary) that can execute the following instructions:
+This repository contains the processors made using Verilog as a part of the course CS F342 Computer Architecture at BITS Pilani, Hyderabad Campus
 
-0000 SW    reg1, 7(reg2)  
-0004 NOR   reg3, reg4, reg5  
-0008 ADDI  reg6, reg3, 1078  
-0012 AND   reg8, reg7, reg6  
-0016 OR    reg9, reg8, reg3  
-
-Initialize the register file with the following data:  
-reg1 = 90966  
-reg2 = 5  
-reg4 = FE331  
-reg5 = 45432  
-reg7 = 23211  
-
-Opcode for each instruction:  
-Instruction 1: 0000  
-Instruction 2: 0001  
-Instruction 3: 0011  
-Instruction 4: 0111  
-Instruction 5: 1111  
-
-The processor has the following control signals:  
-ALUSrc – Select the second input of ALU  
-ALUOp (2 bits) – Control ALU operation  
-MR – Read data from memory  
-MW – Write data into memory  
-MReg – Move data from memory to register  
-EnIM – Read instruction memory contents  
-EnRW – Write data into the register file  
-FA – Forward A mux control  
-FB – Forward B mux control  
-IFIDWrite – Disable IF/ID change  
-PCWrite – Disable PC change  
-ST – Control signal of mux which changes all control signals to zero  
- 
-Other specifications:
-Initialize PC with all zeros. Instruction memory size = 32 bytes. Processor has 16 registers, named reg0 to reg15, each 32 bits wide. A read from instruction memory outputs 4 consecutive bytes starting from the given byte address at the positive edge of the clock, if EnIM is high.   The register file has:
-Two 32-bit read ports: RD1 and RD2  
-One 32-bit write port: WD  
-
-At rising edge of the clock: RD1 and RD2 output data from registers addressed by RN1 and RN2. At falling edge of the clock: data is written via WD to the register at WN, if EnRW is true. Data memory size should be designed as per requirement. All data are in hexadecimal unless stated otherwise.
+# [Single Cycle](https://github.com/abhishek2002228/RISCV-Processors/tree/main/Single_Cycle): 
+*Supports the following instructions as of now*
+                <ul>
+                <li> *LW (I-type OPCODE: 0110011)* </li>
+                <li> *SW (S-type OPCODE: 0100011)* </li>
+                <li> *BEQ (B-type OPCODE: 1100011)* </li>
+                <li> *The following R-type instructions (R-type OPCODE: 1100011):*</li>
+                     <ul>
+                       <li> *ADD (funct3: 000, funct7: 0000000)* </li>
+                       <li> *SUB (funct3: 000, funct7: 0100000)* </li>
+                       <li> *AND (funct3: 111, funct7: 0000000)* </li>
+                       <li> *OR (funct3: 110, funct7: 0000000)* </li>
+  </ul>
+  </ul>
   
-Design Requirements:  
-Create behavioral Verilog models for each architectural block. Build a top-level structural model of the processor by instantiating and interconnecting the blocks. Specify the size and format of all pipeline registers, including fields for:
-  Decoded control signals  
-Data  
-Show all input, output, and control signal waveforms in the report.
+  
+  The modules can be easily modified to add other instructions. That work is left for the future.
 
+
+# [5 Stage Pipelined Processor](https://github.com/abhishek2002228/RISCV-Processors/tree/main/Pipelined%20RISCV%20Processor):
+
+5 Stage pipelined processor with Forwarding Logic and Hazard Detection. Supports the same instructions as the Single Cycle Processor above.
+The design supports the branch-not-taken branch prediction policy. The next step would be to implement a better branch predictor for the pipelined processor 
+
+<img src="/Pipelined%20RISCV%20Processor/pipelined.png">
