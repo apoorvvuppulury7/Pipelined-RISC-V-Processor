@@ -16,9 +16,7 @@ This repository contains the processors made using Verilog as a part of the cour
                        <li> *OR (funct3: 110, funct7: 0000000)* </li>
   </ul>
   </ul>
-  
-  
-  The modules can be easily modified to add other instructions. That work is left for the future.
+  <img src="/Single_Cycle/Single_Cycle.png">
 
 
 # [5 Stage Pipelined Processor](https://github.com/abhishek2002228/RISCV-Processors/tree/main/Pipelined%20RISCV%20Processor):
