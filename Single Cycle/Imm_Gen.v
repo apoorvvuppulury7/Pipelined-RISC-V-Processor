@@ -1,3 +1,6 @@
+//This Immediate Generator (Imm_Gen) is a module used in a RISC-V processor datapath. 
+//Its purpose is to take a 32-bit instruction and extract the immediate constant depending on the instruction format.
+
 module Imm_Gen(instr, Imm_out, Imm_sel);
 	input wire [31:0] instr;
 	input wire [1:0] Imm_sel;
@@ -17,3 +20,4 @@ module Imm_Gen(instr, Imm_out, Imm_sel);
 		
 	assign Imm_out = {{20{Imm_intermediate[11]}}, Imm_intermediate[11:0]};		
 endmodule
+
