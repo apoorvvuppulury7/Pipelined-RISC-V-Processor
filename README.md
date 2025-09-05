@@ -26,7 +26,7 @@ This repository contains the processors made using Verilog as a part of the cour
 
 
 
-# [5 Stage Pipelined Processor](https://github.com/abhishek2002228/RISCV-Processors/tree/main/Pipelined%20RISCV%20Processor):
+# [5 Stage Pipelined Processor](https://github.com/apoorvvuppulury7/Pipelined-RISC-Processor/tree/main/Pipelined%20RISCV):
 
 
 5 Stage pipelined processor with Forwarding Logic and Hazard Detection.
@@ -34,10 +34,11 @@ This repository contains the processors made using Verilog as a part of the cour
 Supports the same instructions as the Single Cycle Processor above.
 
 The design supports the branch-not-taken branch prediction policy.
+<img width="934" height="607" alt="2" src="https://github.com/user-attachments/assets/bdc97fb4-b490-444b-b88b-92b12b2551b3" />
 
-<img src="/Pipelined%20RISCV%20Processor/pipelined.png">
 
 ## To Do
 
 1) Implement a better branch predictor for the pipelined processor 
+
 
