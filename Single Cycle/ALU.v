@@ -1,4 +1,5 @@
-//Verilog implementation of a simple 32-bit ALU module with a Zero flag
+//The ALU is the part of a CPU that performs arithmetic and logical operations.
+//This Verilog module implements a simple 32-bit ALU with support for a few operations and a Zero flag.
 
 module ALU (ALU_Cntrl, In1, In2, Zero, ALU_Result);
 	input wire [3:0] ALU_Cntrl;
@@ -22,3 +23,4 @@ module ALU (ALU_Cntrl, In1, In2, Zero, ALU_Result);
 	assign Zero = (ALU_Result == 32'b0);
 
 endmodule
+
