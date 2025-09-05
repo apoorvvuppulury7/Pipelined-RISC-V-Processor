@@ -1,3 +1,6 @@
+//This module represents the data memory block in your CPU, where loads (lw) and stores (sw) happen.
+//It supports 1) 32-bit word read, 2) 32-bit word write, 3) Reset initialization
+
 module Data_mem(addr,wr_data,rd_data,mem_read,mem_write, clk, rst);
 	input wire [31:0] addr, wr_data;
 	input wire mem_read, mem_write,clk, rst;
@@ -27,3 +30,4 @@ module Data_mem(addr,wr_data,rd_data,mem_read,mem_write, clk, rst);
 	
 	assign rd_data = (mem_read)? {d_mem[addr+3],d_mem[addr+2],d_mem[addr+1], d_mem[addr]} : 32'bx ;
 endmodule
+
