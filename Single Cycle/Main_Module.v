@@ -6,7 +6,7 @@
 `include "Instr_Mem.v"
 `include "reg_file.v"
 
-module Main (
+module Main_Module (
     input wire rst,
     input wire clk
 );
@@ -53,3 +53,4 @@ module Main (
     end
 
 endmodule
+
