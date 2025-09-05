@@ -1,17 +1,20 @@
-module Data_mem(addr,wr_data,rd_data,mem_read,mem_write, clk, rst);
-	input wire [31:0] addr, wr_data;
-	input wire mem_read, mem_write,clk, rst;
-	output wire [31:0] rd_data;
-	
-	reg [7:0] d_mem [(2^32)-1:0];
-	integer i;
+module Data_mem (
+    input wire [9:0] addr,         
+    input wire [31:0] wr_data,
+    input wire mem_read, mem_write,
+    input wire clk, rst,
+    output reg [31:0] rd_data
+);
+
+    reg [31:0] d_mem [0:255];       
+    integer i;
 	
 	always @(posedge rst, posedge clk)
 		begin
 		if(rst)
 			begin
 			for(i = 0; i < (2**32) ; i = i + 1)
-				d_mem[i] <= 8'b0;
+				d_mem[i] <= 32'b0;
 			end
 		else
 			begin
@@ -26,4 +29,5 @@ module Data_mem(addr,wr_data,rd_data,mem_read,mem_write, clk, rst);
 		end
 	
 	assign rd_data = (mem_read)? {d_mem[addr+3],d_mem[addr+2],d_mem[addr+1], d_mem[addr]} : 32'bx ;
+
 endmodule
