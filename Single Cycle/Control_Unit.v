@@ -1,4 +1,6 @@
-module control_unit(opcode, regwrite, immsel, alusrc, aluop, memread, memwrite, memtoreg, branch);
+//Its job is to look at the opcode (bits [6:0] of the instruction) and generate all the control signals needed to drive the datapath.
+
+module Control_Unit(opcode, regwrite, immsel, alusrc, aluop, memread, memwrite, memtoreg, branch);
 	input wire [6:0] opcode;
 	output reg [1:0] immsel, aluop;
 	output reg regwrite, alusrc, memread, memwrite, memtoreg, branch;
@@ -65,4 +67,5 @@ module control_unit(opcode, regwrite, immsel, alusrc, aluop, memread, memwrite, 
 				end
 		endcase
 		end
+
 endmodule
