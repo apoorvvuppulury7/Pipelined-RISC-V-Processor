@@ -1,9 +1,10 @@
 //Its job is to look at the opcode (bits [6:0] of the instruction) and generate all the control signals needed to drive the datapath.
 
-module Control_Unit(opcode, regwrite, immsel, alusrc, aluop, memread, memwrite, memtoreg, branch);
-	input wire [6:0] opcode;
-	output reg [1:0] immsel, aluop;
-	output reg regwrite, alusrc, memread, memwrite, memtoreg, branch;
+module Control_Unit (
+    input  wire [6:0] opcode,
+    output reg  [1:0] immsel, aluop,
+    output reg  regwrite, alusrc, memread, memwrite, memtoreg, branch
+);
 	
 	localparam [6:0] R_type = 7'b0110011, I_type = 7'b0000011, S_type = 7'b0100011, B_type = 7'b1100011;
 	
@@ -69,3 +70,4 @@ module Control_Unit(opcode, regwrite, immsel, alusrc, aluop, memread, memwrite, 
 		end
 
 endmodule
+
