@@ -1,3 +1,5 @@
+//Verilog implementation of an ALU Control 
+
 module ALU_Control_Unit (ALU_Op, funct3, funct7, ALU_Cntrl);
 	
 	input wire [1:0] ALU_Op;
@@ -38,4 +40,5 @@ module ALU_Control_Unit (ALU_Op, funct3, funct7, ALU_Cntrl);
 			ALU_Cntrl = 4'bx;
 			end
 		end
+
 endmodule
