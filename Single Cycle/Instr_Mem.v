@@ -4,10 +4,10 @@
 //4) Outputs the 32-bit instruction on instr.
 //So, this module is a read-only instruction memory, preloaded with machine code, and is part of a processor’s instruction fetch stage.
 
-module Instr_Mem(PC,instr);
-	input wire rst;
-	input wire [31:0] PC;
-	output wire [31:0] instr;
+module Instr_Mem (
+    input  wire [31:0] PC,      // Program Counter (word address)
+    output wire [31:0] instr    // Instruction at PC
+);
 	
 	reg [7:0] i_mem [(2^32)-1 : 0] ;
 	
@@ -42,4 +42,3 @@ module Instr_Mem(PC,instr);
 	assign instr = {i_mem[PC+3],i_mem[PC+2],i_mem[PC+1],i_mem[PC]};
 	
 endmodule
-
