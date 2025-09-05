@@ -2,7 +2,7 @@
 
 This repository contains the processors made using Verilog as a part of the course CS F342 Computer Architecture at BITS Pilani, Hyderabad Campus
 
-# [Single Cycle](https://github.com/abhishek2002228/RISCV-Processors/tree/main/Single_Cycle): 
+# [Single Cycle](https://github.com/apoorvvuppulury7/Pipelined-RISC-Processor/tree/main/Single%20Cycle): 
 *Supports the following instructions as of now*
                 <ul>
                 <li> *LW (I-type OPCODE: 0110011)* </li>
@@ -22,8 +22,8 @@ This repository contains the processors made using Verilog as a part of the cour
 
 
   Information about the instruction formats can be found [here](https://metalcode.eu/2019-12-06-rv32i.html)
+  <img width="967" height="780" alt="1" src="https://github.com/user-attachments/assets/7e9f16c1-f23e-4c3e-81ac-59e8d63d6941" />
 
-  <img src="/Single_Cycle/Single_Cycle.png">
 
 
 # [5 Stage Pipelined Processor](https://github.com/abhishek2002228/RISCV-Processors/tree/main/Pipelined%20RISCV%20Processor):
@@ -40,3 +40,4 @@ The design supports the branch-not-taken branch prediction policy.
 ## To Do
 
 1) Implement a better branch predictor for the pipelined processor 
+
