@@ -1,4 +1,6 @@
-//Verilog implementation of an ALU Control 
+//The ALU Control Unit decides which operation the ALU should perform based on:
+//1) The ALU_Op signal (from the main Control Unit).
+//2) The funct3 and funct7 fields (from the instruction itself, for R-type).
 
 module ALU_Control_Unit (ALU_Op, funct3, funct7, ALU_Cntrl);
 	
@@ -42,3 +44,4 @@ module ALU_Control_Unit (ALU_Op, funct3, funct7, ALU_Cntrl);
 		end
 
 endmodule
+
