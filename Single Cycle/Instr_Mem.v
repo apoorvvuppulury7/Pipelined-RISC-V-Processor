@@ -1,3 +1,9 @@
+//1) Program counter (PC) tells which instruction to fetch.
+//2) The module goes to memory at i_mem[PC].
+//3) It fetches 4 bytes (little-endian order).
+//4) Outputs the 32-bit instruction on instr.
+//So, this module is a read-only instruction memory, preloaded with machine code, and is part of a processor’s instruction fetch stage.
+
 module Instr_Mem(PC,instr);
 	input wire rst;
 	input wire [31:0] PC;
@@ -36,3 +42,4 @@ module Instr_Mem(PC,instr);
 	assign instr = {i_mem[PC+3],i_mem[PC+2],i_mem[PC+1],i_mem[PC]};
 	
 endmodule
+
