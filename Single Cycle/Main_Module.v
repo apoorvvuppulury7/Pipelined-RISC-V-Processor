@@ -1,3 +1,6 @@
+//It is a top-level module that connects together all the submodules.
+//It is essentially a mini RISC-V single-cycle CPU that can fetch, decode, and execute instructions.
+
 `include "ALU.v" 
 `include "ALU_Control.v"
 `include "control_unit.v"
@@ -53,4 +56,5 @@ module Main_Module (
     end
 
 endmodule
+
 
