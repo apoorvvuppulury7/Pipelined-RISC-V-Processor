@@ -3,7 +3,7 @@ module tb_fw();
     reg [4:0] exmem_rd, memwb_rd, idex_rs1, idex_rs2;
     wire [1:0] forwardA, forwardB;
 
-    forwarding_unit fw(exmem_regwr, exmem_rd, memwb_regwr, memwb_rd, idex_rs1, idex_rs2, forwardA, forwardB);
+    Forwarding_Unit fw(.exmem_regwr(exmem_regwr), .exmem_rd(exmem_rd), .memwb_regwr(memwb_regwr), .memwb_rd(memwb_rd), .idex_rs1(idex_rs1), .idex_rs2(idex_rs2), .forwardA(forwardA), .forwardB(forwardB));
 
     	initial
 		begin

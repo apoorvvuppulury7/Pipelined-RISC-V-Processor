@@ -1,0 +1,34 @@
+# ===========================
+# Verilog / Simulation Outputs
+# ===========================
+
+*.vcd
+*.vvp
+*.fst
+a.out
+proc_sim
+
+# GTKWave
+*.gtkw
+*.sav
+
+# Yosys
+*.json
+*.il
+
+# nextpnr
+*.asc
+*.config
+
+# IceStorm
+*.bin
+
+# Logs
+*.log
+
+# VS Code (keep workspace settings local)
+.vscode/settings.json
+
+# OS
+.DS_Store
+Thumbs.db
