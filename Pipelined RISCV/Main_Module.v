@@ -1,19 +1,19 @@
 `include "ALU.v"
 `include "ALU_Control.v"
-`include "control_unit.v"
+`include "Control_Unit.v"
 `include "Data_Mem.v"
 `include "Imm_Gen.v"
 `include "Instr_Mem.v"
-`include "reg_file.v"
-`include "exmem.v"
-`include "forwarding_unit.v"
-`include "hazard_detection_unit.v"
-`include "idex.v"
-`include "ifid.v"
-`include "memwb.v"
+`include "Reg_File.v"
+`include "Ex_Mem.v"
+`include "Forwarding_Unit.v"
+`include "Hazard_Detection_Unit.v"
+`include "IdEx.v"
+`include "IfId.v"
+`include "MemWb.v"
 `include "PC.v"
 
-module Main_Module(
+module main(
     input  wire clk,
     input  wire rst,
     input  wire interrupt
@@ -30,9 +30,9 @@ module Main_Module(
     PC program_counter(
         .clk(clk),
         .rst(rst),
-        .pc_write(pc_write),
-        .pc_in(pc_next),
-        .pc_out(pc_reg)
+        .enable(pc_write),
+        .PC_next(pc_next),
+        .PC_reg(pc_reg)
     );
 
     Instr_Mem I_mem(
@@ -45,7 +45,7 @@ module Main_Module(
     wire flush = pc_src;
     wire interr_flush = flush | interrupt;
 
-    ifid if_id(
+    IfId if_id(
         .flush(interr_flush),
         .clk(clk),
         .rst(rst),
@@ -75,7 +75,7 @@ module Main_Module(
     wire [31:0] wb_wr_data;
     wire [31:0] id_dat1, id_dat2, id_imm;
 
-    control_unit cu(
+    Control_Unit cu(
         .opcode(id_opcode),
         .regwrite(id_regwrite),
         .immsel(id_immsel),
@@ -94,7 +94,7 @@ module Main_Module(
         .ALU_Cntrl(id_ALU_Cntrl)
     );
 
-    reg_file regs(
+    Reg_File regs(
         .rd_reg1(id_rs1),
         .rd_reg2(id_rs2),
         .wr_reg(wb_rd),
@@ -124,13 +124,13 @@ module Main_Module(
         id_memtoreg,     // [1]
         id_branch        // [0]
     };
-    
+
     wire [13:0] id_control_sig = cntrl ? id_control_sig_temp : 14'b0;
     wire [13:0] ex_control_sig;
     wire [31:0] ex_pc, ex_imm, ex_dat1, ex_dat2;
     wire [4:0] ex_rs1, ex_rs2, ex_rd;
 
-    idex id_ex(
+    IdEx id_ex(
         .flush(interr_flush),
         .clk(clk),
         .rst(rst),
@@ -156,25 +156,27 @@ module Main_Module(
     reg  [31:0] alu_in1, alu_in21;
     wire [31:0] alu_in2;
 
-    always @(*) 
-	begin
+    wire [32:0] mem_alu;
+
+    always @(*)
+    begin
         case (forwardA)
             2'b00: alu_in1 = ex_dat1;
             2'b01: alu_in1 = wb_wr_data;
             2'b10: alu_in1 = mem_alu[31:0];
             default: alu_in1 = ex_dat1;
         endcase
-    	end
+    end
 
-    always @(*) 
-	begin
+    always @(*)
+    begin
         case (forwardB)
             2'b00: alu_in21 = ex_dat2;
             2'b01: alu_in21 = wb_wr_data;
             2'b10: alu_in21 = mem_alu[31:0];
             default: alu_in21 = ex_dat2;
         endcase
-    	end
+    end
 
     assign alu_in2 = (ex_control_sig[4]) ? ex_imm : alu_in21;
 
@@ -194,19 +196,18 @@ module Main_Module(
 
     wire [9:0] mem_control_sig;
     wire [31:0] mem_dat2;
-    wire [32:0] mem_alu;
     wire [4:0] mem_rd;
 
     reg [31:0] EPC;
-    always @(posedge clk or posedge rst) 
-	begin
+    always @(posedge clk or posedge rst)
+    begin
         if (rst)
             EPC <= 32'b0;
         else if (interrupt)
             EPC <= ex_pc;
-    	end
+    end
 
-    exmem ex_mem(
+    Ex_Mem ex_mem(
         .flush(flush),
         .clk(clk),
         .rst(rst),
@@ -225,7 +226,7 @@ module Main_Module(
     assign pc_src = mem_alu[32] && mem_control_sig[0];
 
     wire [31:0] mem_memval;
-    Data_mem D_mem(
+    Data_Mem D_mem(
         .addr(mem_alu[31:0]),
         .wr_data(mem_dat2),
         .rd_data(mem_memval),
@@ -238,7 +239,7 @@ module Main_Module(
     wire [9:0] wb_control_sig;
     wire [31:0] wb_memval, wb_alu;
 
-    memwb mem_wb(
+    MemWb mem_wb(
         .clk(clk),
         .rst(rst),
         .mem_control_sig(mem_control_sig),
@@ -254,7 +255,7 @@ module Main_Module(
     assign wb_regwrite = wb_control_sig[5];
     assign wb_wr_data   = (wb_control_sig[1]) ? wb_memval : wb_alu;
 
-    forwarding_unit fw(
+    Forwarding_Unit fw(
         .exmem_regwr(mem_control_sig[5]),
         .exmem_rd(mem_rd),
         .memwb_regwr(wb_control_sig[5]),
@@ -265,7 +266,7 @@ module Main_Module(
         .forwardB(forwardB)
     );
 
-    hazard_det hd(
+    Hazard_Detection_Unit hd(
         .memread(ex_control_sig[3]),
         .ifid_rs1(id_rs1),
         .ifid_rs2(id_rs2),
