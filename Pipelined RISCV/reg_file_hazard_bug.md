@@ -167,48 +167,6 @@ This is purely combinational: if the write port is writing to the same register 
 
 No stall logic, no pipeline changes, no forwarding unit changes required — this closes the gap at its source (the register file's read port) rather than trying to patch it further down the pipeline.
 
----
-
-## 7. A Verilog Gotcha Hit Along the Way
-
-The first attempt at the fix accidentally wrapped the `assign` statements inside a procedural block:
-
-```verilog
-always @(*)
-begin
-    assign DAT1 = (reg_wr && wr_reg == rd_reg1 && rd_reg1 != 5'b0) ? wr_data : reg_num[rd_reg1];
-    assign DAT2 = (reg_wr && wr_reg == rd_reg2 && rd_reg2 != 5'b0) ? wr_data : reg_num[rd_reg2];
-end
-```
-
-This produced an Icarus Verilog warning:
-```
-procedural continuous assignments are not yet fully supported.
-The RHS of this assignment will only be evaluated once, at the time the assignment is executed.
-```
-
-**Why this is wrong:** `assign` is a *continuous* assignment and belongs at module scope only. Placing it inside an `always` block turns it into a *procedural continuous assignment* — a rarely-used, poorly-supported Verilog construct whose RHS is only evaluated once (at the moment the `always` block executes), not reactively. It silently defeats the entire purpose of making the read combinational.
-
-**Two valid fixes:**
-
-- **Option A (used) — move `assign` to module scope**, keep `DAT1`/`DAT2` as `wire`:
-  ```verilog
-  assign DAT1 = (reg_wr && wr_reg == rd_reg1 && rd_reg1 != 5'b0) ? wr_data : reg_num[rd_reg1];
-  assign DAT2 = (reg_wr && wr_reg == rd_reg2 && rd_reg2 != 5'b0) ? wr_data : reg_num[rd_reg2];
-  ```
-
-- **Option B — keep the `always @(*)` block but drop the `assign` keyword** (requires `DAT1`/`DAT2` declared as `reg`):
-  ```verilog
-  always @(*) begin
-      DAT1 = (reg_wr && wr_reg == rd_reg1 && rd_reg1 != 5'b0) ? wr_data : reg_num[rd_reg1];
-      DAT2 = (reg_wr && wr_reg == rd_reg2 && rd_reg2 != 5'b0) ? wr_data : reg_num[rd_reg2];
-  end
-  ```
-
-**Rule of thumb:** `assign` lives at module scope, never inside `always`/`initial`. Inside a procedural block, drop the keyword and use a bare (blocking or non-blocking) assignment instead.
-
----
-
 ## 8. Verification
 
 After applying the write-before-read bypass at module scope:
