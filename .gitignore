@@ -6,6 +6,9 @@
 *.vvp
 *.fst
 a.out
+
+# Icarus simulation executables
+*_sim
 proc_sim
 
 # GTKWave
@@ -25,6 +28,9 @@ proc_sim
 
 # Logs
 *.log
+
+# Archives
+*.zip
 
 # VS Code (keep workspace settings local)
 .vscode/settings.json

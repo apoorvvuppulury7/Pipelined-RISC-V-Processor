@@ -25,9 +25,7 @@ module Reg_File(rd_reg1, rd_reg2, wr_reg, wr_data, DAT1, DAT2, reg_wr, rst, clk)
     	end
     
 
-    always @(*)
-    	begin
-        DAT1 = reg_num[rd_reg1];
-        DAT2 = reg_num[rd_reg2];
-    	end
+   // line 28-32 replace with just these two lines, at module scope:
+	assign DAT1 = (reg_wr && wr_reg == rd_reg1 && rd_reg1 != 5'b0) ? wr_data : reg_num[rd_reg1];
+	assign DAT2 = (reg_wr && wr_reg == rd_reg2 && rd_reg2 != 5'b0) ? wr_data : reg_num[rd_reg2];
 endmodule

@@ -3,7 +3,8 @@
 `include "Control_Unit.v"
 `include "Data_Mem.v"
 `include "Imm_Gen.v"
-`include "Instr_Mem.v"
+`include "Instr_Mem_loop.v"
+`include "Branch_Predictor.v"
 `include "Reg_File.v"
 `include "Ex_Mem.v"
 `include "Forwarding_Unit.v"
@@ -20,11 +21,22 @@ module main(
 );
 
     wire pc_write;
-    wire pc_src;
-    wire [31:0] pc_next_temp, pc_reg, mem_br_addr, pc_incr, instr, pc_next;
+    wire mispredict;                  // was: pc_src. now means "redirect b/c wrong guess"
+    wire [31:0] pc_reg, pc_incr, instr, pc_next;
+    wire [31:0] redirect_pc;          // correct PC to resteer to on a misprediction
 
     assign pc_incr = pc_reg + 32'd4;
-    assign pc_next_temp = pc_src ? mem_br_addr : pc_incr;
+
+    // ---- IF-stage branch prediction ----
+    wire        if_pred_taken;
+    wire [31:0] if_pred_target;
+
+    // Predicted next PC: if predictor says taken (and BTB gave a target),
+    // fetch from the target; otherwise fall through to PC+4.
+    wire [31:0] pc_predicted = if_pred_taken ? if_pred_target : pc_incr;
+
+    // Final next PC: interrupt > misprediction redirect > prediction.
+    wire [31:0] pc_next_temp = mispredict ? redirect_pc : pc_predicted;
     assign pc_next = interrupt ? 32'h80000180 : pc_next_temp;
 
     PC program_counter(
@@ -35,14 +47,14 @@ module main(
         .PC_reg(pc_reg)
     );
 
-    Instr_Mem I_mem(
+    Instr_Mem_loop I_mem(
         .PC(pc_reg),
         .instr(instr)
     );
 
     wire ifid_write;
     wire [31:0] id_pc, id_instr;
-    wire flush = pc_src;
+    wire flush = mispredict;
     wire interr_flush = flush | interrupt;
 
     IfId if_id(
@@ -55,6 +67,68 @@ module main(
         .id_pc(id_pc),
         .id_instr(id_instr)
     );
+
+    //========================================================================
+    // Prediction sidecar registers.
+    //   Carry, alongside each instruction, what we predicted in IF:
+    //     - pred_taken   : did we guess taken?
+    //     - pred_npc     : the next-PC we actually fetched as a result
+    //                      (target if taken-guess, else PC+4)
+    //   These mirror the freeze/flush of the REAL pipeline regs so the
+    //   prediction stays bit-aligned with its instruction down to MEM.
+    //   We do NOT widen any existing pipeline register -> datapath untouched.
+    //========================================================================
+    // ID stage copies
+    reg        id_pred_taken;
+    reg [31:0] id_pred_npc;
+    reg [31:0] id_pred_pc;     // the instruction's own fetch PC
+    // EX stage copies
+    reg        ex_pred_taken;
+    reg [31:0] ex_pred_npc;
+    reg [31:0] ex_pred_pc;
+    // MEM stage copies
+    reg        mem_pred_taken;
+    reg [31:0] mem_pred_npc;
+    reg [31:0] mem_pred_pc;
+
+    // IF -> ID : same enable + flush as IfId
+    always @(posedge clk or posedge rst) begin
+        if (rst || interr_flush) begin
+            id_pred_taken <= 1'b0;
+            id_pred_npc   <= 32'b0;
+            id_pred_pc    <= 32'b0;
+        end else if (ifid_write) begin
+            id_pred_taken <= if_pred_taken;
+            id_pred_npc   <= pc_predicted;
+            id_pred_pc    <= pc_reg;
+        end
+    end
+
+    // ID -> EX : flush only (always advances), like IdEx
+    always @(posedge clk or posedge rst) begin
+        if (rst || interr_flush) begin
+            ex_pred_taken <= 1'b0;
+            ex_pred_npc   <= 32'b0;
+            ex_pred_pc    <= 32'b0;
+        end else begin
+            ex_pred_taken <= id_pred_taken;
+            ex_pred_npc   <= id_pred_npc;
+            ex_pred_pc    <= id_pred_pc;
+        end
+    end
+
+    // EX -> MEM : flush only, like Ex_Mem
+    always @(posedge clk or posedge rst) begin
+        if (rst || flush) begin
+            mem_pred_taken <= 1'b0;
+            mem_pred_npc   <= 32'b0;
+            mem_pred_pc    <= 32'b0;
+        end else begin
+            mem_pred_taken <= ex_pred_taken;
+            mem_pred_npc   <= ex_pred_npc;
+            mem_pred_pc    <= ex_pred_pc;
+        end
+    end
 
     wire [4:0] id_rs1, id_rs2, id_rd;
     wire [6:0] id_opcode, id_funct7;
@@ -196,6 +270,7 @@ module main(
 
     wire [9:0] mem_control_sig;
     wire [31:0] mem_dat2;
+    wire [31:0] mem_br_addr;
     wire [4:0] mem_rd;
 
     reg [31:0] EPC;
@@ -223,7 +298,33 @@ module main(
         .mem_rd(mem_rd)
     );
 
-    assign pc_src = mem_alu[32] && mem_control_sig[0];
+    //========================================================================
+    // MEM-stage branch resolution + predictor training.
+    //   Ground truth available here (unchanged datapath taps):
+    //     mem_branch      = this instr is a branch
+    //     mem_actual_taken= it was actually taken
+    //     mem_br_addr     = its actual target
+    //========================================================================
+    wire        mem_branch       = mem_control_sig[0];
+    wire        mem_actual_taken = mem_alu[32];
+
+    // The architecturally-correct next PC for the instruction in MEM:
+    //   taken  -> its branch target
+    //   not    -> its own PC + 4
+    wire [31:0] mem_correct_npc =
+        (mem_branch && mem_actual_taken) ? mem_br_addr : (mem_pred_pc + 32'd4);
+
+    // We mispredicted iff this is a real branch whose fetched-next-PC (carried
+    // in the sidecar) differs from the correct next PC. Non-branches are always
+    // fetched sequentially, which is always correct, so they never mispredict.
+    assign mispredict  = mem_branch && (mem_pred_npc != mem_correct_npc);
+    assign redirect_pc = mem_correct_npc;
+
+    // Train the predictor only on real branches reaching MEM.
+    wire        bp_train_en     = mem_branch;
+    wire [31:0] bp_train_pc     = mem_pred_pc;
+    wire        bp_train_taken  = mem_actual_taken;
+    wire [31:0] bp_train_target = mem_br_addr;
 
     wire [31:0] mem_memval;
     Data_Mem D_mem(
@@ -274,6 +375,18 @@ module main(
         .pc_write(pc_write),
         .ifid_write(ifid_write),
         .cntrl(cntrl)
+    );
+
+    Branch_Predictor #(.ENTRIES(16), .IDX_W(4), .TAG_W(26)) bp(
+        .clk(clk),
+        .rst(rst),
+        .if_pc(pc_reg),
+        .predict_taken(if_pred_taken),
+        .predict_target(if_pred_target),
+        .train_en(bp_train_en),
+        .train_pc(bp_train_pc),
+        .train_taken(bp_train_taken),
+        .train_target(bp_train_target)
     );
 
 endmodule
