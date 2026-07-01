@@ -15,7 +15,9 @@ module tb_pred();
         rst=0;
         for (cyc=0; cyc<40; cyc=cyc+1) begin
             @(negedge clk);
-            $display("cyc=%0d PC=%0d  pred_taken=%b mispredict=%b  | BHT[2]=%b BHT[3]=%b  BTBv[3]=%b BTBtgt[3]=%0d  x1=%0d x3=%0d mem16=%0d",
+            if (A.wb_regwrite)
+                $display("WB: rd=%0d data=%0d", A.wb_rd, A.wb_regwrite);
+            $display("cyc=%0d PC=%0d  pred_taken=%b mispredict=%b  | BHT[2]=%b BHT[3]=%b  BTBv[3]=%b BTBtgt[3]=%0d  x1=%0d x3=%0d mem160=%0d",
                 cyc, A.pc_reg, A.if_pred_taken, A.mispredict,
                 A.bp.bht[2], A.bp.bht[3],
                 A.bp.btb_val[3], A.bp.btb_tgt[3],

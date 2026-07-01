@@ -7,8 +7,19 @@ module test_ALU();
 	wire Zero;
 	wire [31:0] ALU_Result;
 	
-	ALU A(ALU_Cntrl, In1, In2, Zero, ALU_Result);
-	ALU_Control_Unit B(ALU_Op, funct3, funct7, ALU_Cntrl);
+	ALU A(
+    .ALU_Cntrl(ALU_Cntrl),
+    .In1(In1),
+    .In2(In2),
+    .ALU_Result(ALU_Result),
+    .Zero(Zero)
+);
+	ALU_Control_Unit B(
+    .ALU_Op(ALU_Op),
+    .funct3(funct3),
+    .funct7(funct7),
+    .ALU_Cntrl(ALU_Cntrl)
+);
 	
 	initial
 		begin

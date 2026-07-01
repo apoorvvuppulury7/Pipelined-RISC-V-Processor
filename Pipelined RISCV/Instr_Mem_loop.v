@@ -4,7 +4,7 @@
 //          beq x1,x0,+8      (exit when x1==0)
 //          beq x0,x0,-12     (always: branch back to loop top)
 //   exit:  sw  x3,16(x0)
-module Instr_Mem(
+module Instr_Mem_loop(
     input  wire [31:0] PC,
     output wire [31:0] instr
 );
